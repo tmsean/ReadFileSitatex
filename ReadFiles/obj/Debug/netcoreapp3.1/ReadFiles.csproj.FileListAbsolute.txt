@@ -1,0 +1,13 @@
+E:\SCC\ReadFiles\ReadFiles\obj\Debug\netcoreapp3.1\ReadFiles.csprojAssemblyReference.cache
+E:\SCC\ReadFiles\ReadFiles\obj\Debug\netcoreapp3.1\ReadFiles.AssemblyInfoInputs.cache
+E:\SCC\ReadFiles\ReadFiles\obj\Debug\netcoreapp3.1\ReadFiles.AssemblyInfo.cs
+E:\SCC\ReadFiles\ReadFiles\obj\Debug\netcoreapp3.1\ReadFiles.csproj.CoreCompileInputs.cache
+E:\SCC\ReadFiles\ReadFiles\bin\Debug\netcoreapp3.1\ReadFiles.exe
+E:\SCC\ReadFiles\ReadFiles\bin\Debug\netcoreapp3.1\ReadFiles.deps.json
+E:\SCC\ReadFiles\ReadFiles\bin\Debug\netcoreapp3.1\ReadFiles.runtimeconfig.json
+E:\SCC\ReadFiles\ReadFiles\bin\Debug\netcoreapp3.1\ReadFiles.runtimeconfig.dev.json
+E:\SCC\ReadFiles\ReadFiles\bin\Debug\netcoreapp3.1\ReadFiles.dll
+E:\SCC\ReadFiles\ReadFiles\bin\Debug\netcoreapp3.1\ReadFiles.pdb
+E:\SCC\ReadFiles\ReadFiles\obj\Debug\netcoreapp3.1\ReadFiles.dll
+E:\SCC\ReadFiles\ReadFiles\obj\Debug\netcoreapp3.1\ReadFiles.pdb
+E:\SCC\ReadFiles\ReadFiles\obj\Debug\netcoreapp3.1\ReadFiles.genruntimeconfig.cache
