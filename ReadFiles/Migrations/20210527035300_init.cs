@@ -25,13 +25,14 @@ namespace ReadFiles.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    FileName = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Header = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Priority = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Destinations = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Origin = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MessageId = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    SMI = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubMessage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MessageEnd = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -40,30 +41,37 @@ namespace ReadFiles.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ScheduleChangeMessages",
+                name: "SCMessages",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MessageID = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SCC_SITATEXID = table.Column<int>(type: "int", nullable: true)
+                    SCC_SITATEXID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ScheduleChangeMessages", x => x.ID);
+                    table.PrimaryKey("PK_SCMessages", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_ScheduleChangeMessages_SITATEX_FILES_SCC_SITATEXID",
+                        name: "FK_SCMessages_SITATEX_FILES_SCC_SITATEXID",
                         column: x => x.SCC_SITATEXID,
                         principalTable: "SITATEX_FILES",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ScheduleChangeMessages_SCC_SITATEXID",
-                table: "ScheduleChangeMessages",
+                name: "IX_SCMessages_SCC_SITATEXID",
+                table: "SCMessages",
                 column: "SCC_SITATEXID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SITATEX_FILES_FileName",
+                table: "SITATEX_FILES",
+                column: "FileName",
+                unique: true,
+                filter: "[FileName] IS NOT NULL");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -72,7 +80,7 @@ namespace ReadFiles.Migrations
                 name: "Destinations");
 
             migrationBuilder.DropTable(
-                name: "ScheduleChangeMessages");
+                name: "SCMessages");
 
             migrationBuilder.DropTable(
                 name: "SITATEX_FILES");

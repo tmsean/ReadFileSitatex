@@ -9,8 +9,8 @@ using ReadFiles.Data;
 namespace ReadFiles.Migrations
 {
     [DbContext(typeof(SCCContext))]
-    [Migration("20210526111431_Declare_foreign_key_of_submessages")]
-    partial class Declare_foreign_key_of_submessages
+    [Migration("20210527035300_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,7 +20,7 @@ namespace ReadFiles.Migrations
                 .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("ReadFiles.Data.SubMessages", b =>
+            modelBuilder.Entity("ReadFiles.Data.SCMessages", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -40,7 +40,7 @@ namespace ReadFiles.Migrations
 
                     b.HasIndex("SCC_SITATEXID");
 
-                    b.ToTable("ScheduleChangeMessages");
+                    b.ToTable("SCMessages");
                 });
 
             modelBuilder.Entity("ReadFiles.DestinationTypeB", b =>
@@ -68,6 +68,9 @@ namespace ReadFiles.Migrations
                     b.Property<string>("Destinations")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Header")
                         .HasColumnType("nvarchar(max)");
 
@@ -84,7 +87,7 @@ namespace ReadFiles.Migrations
                     b.Property<string>("Priority")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SubMessage")
+                    b.Property<string>("SMI")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Text")
@@ -92,13 +95,17 @@ namespace ReadFiles.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("FileName")
+                        .IsUnique()
+                        .HasFilter("[FileName] IS NOT NULL");
+
                     b.ToTable("SITATEX_FILES");
                 });
 
-            modelBuilder.Entity("ReadFiles.Data.SubMessages", b =>
+            modelBuilder.Entity("ReadFiles.Data.SCMessages", b =>
                 {
                     b.HasOne("ReadFiles.SCC_SITATEX", null)
-                        .WithMany("subMessages")
+                        .WithMany("SubMessages")
                         .HasForeignKey("SCC_SITATEXID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -106,7 +113,7 @@ namespace ReadFiles.Migrations
 
             modelBuilder.Entity("ReadFiles.SCC_SITATEX", b =>
                 {
-                    b.Navigation("subMessages");
+                    b.Navigation("SubMessages");
                 });
 #pragma warning restore 612, 618
         }

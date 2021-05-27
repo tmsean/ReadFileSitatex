@@ -15,11 +15,12 @@ namespace ReadFiles
         public string Origin { get; set; }
         [StringLength(20)]
         public string MessageId { get; set; }
+        [StringLength(3)]
+        public string SMI { get; set; }
         public string Text { get; set; }
-        public string SubMessage { get; set; }
         public string MessageEnd { get; set; }
 
-        public ICollection<SCMessages> subMessages { get; set; }
+        public ICollection<SCMessages> SubMessages { get; set; }
     }
     public class DestinationTypeB
     {

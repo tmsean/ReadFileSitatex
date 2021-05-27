@@ -21,6 +21,7 @@ namespace ReadFiles
                 List<string> contents = File.ReadAllLines(file).ToList();
                 SCC_SITATEX sCC = new();
                 FileInfo getFile = new(file);
+                //Get file name
                 sCC.FileName = getFile.Name;
 
                 int checkHeader = contents.FindIndex(a => a.Contains("=HEADER"));
@@ -29,6 +30,7 @@ namespace ReadFiles
                 sCC.Priority = contents[checkPriority + 1];
                 int checkDestinations = contents.FindIndex(a => a.Contains("=DESTINATION TYPE B"));
                 int checkOrigin = contents.FindIndex(a => a.Contains("=ORIGIN"));
+                //Get list of destinations
                 var sb = new System.Text.StringBuilder();
                 for (int i = checkDestinations + 1; i < checkOrigin; i++)
                 {
@@ -37,17 +39,37 @@ namespace ReadFiles
                 sCC.Destinations = sb.ToString();
                 sCC.Origin = contents[checkOrigin + 1];
                 int checkMessageId = contents.FindIndex(a => a.Contains("=MSGID"));
-                int checkText = contents.FindIndex(a => a.Contains("=TEXT"));
                 sCC.MessageId = contents[checkMessageId + 1];
+                int checkSMI = contents.FindIndex(a => a.Contains("=SMI"));
+                sCC.SMI = contents[checkSMI + 1];
+                int checkText = contents.FindIndex(a => a.Contains("=TEXT"));
                 sCC.Text = String.Concat(contents[checkText + 1], "\n", contents[checkText + 2]);
-                StringBuilder subMessage = new StringBuilder();
-                int checkMessageEnd = contents.FindIndex(a => a.Contains("SI") || a.Contains("DC THEO SLOT") || a.Contains("BRGDS/"));
-                for (int i = checkText + 2; i < checkMessageEnd; i++)
+                //Get sub messages
+                StringBuilder subMessageContent = new StringBuilder();
+                int checkMessageEnd = contents.FindIndex(a => a.Contains("SI") || a.Contains("DC THEO SLOT") || a.Contains("BRGDS/") || a.Contains("BRGDS") || a.Contains("RSN:")); //Text for footer
+                for (int i = checkText + 3; i < checkMessageEnd; i++)
                 {
-                    subMessage.AppendLine(contents[i]);
+                    subMessageContent.AppendLine(contents[i]);
                 }
-                sCC.SubMessage = subMessage.ToString();
-                var footer = new System.Text.StringBuilder();
+
+                sCC.SubMessages = new List<SCMessages>();
+                List<string> messages = subMessageContent.ToString().Split("//").ToList();
+                foreach (string message in messages)
+                {
+                    //Console.WriteLine(message);
+                    if (!String.IsNullOrEmpty(message))
+                    {
+                        var SCMessage = new SCMessages()
+                        {
+                            SCC_SITATEXID = sCC.ID,
+                            MessageID = sCC.MessageId,
+                            Content = message
+                        };
+                        sCC.SubMessages.Add(SCMessage);
+                    }
+                }
+                //Get footer content
+                StringBuilder footer = new System.Text.StringBuilder();
                 if (checkMessageEnd > 0)
                 {
                     for (int i = checkMessageEnd; i < contents.Count; i++)
@@ -57,8 +79,8 @@ namespace ReadFiles
                     }
                 }
                 sCC.MessageEnd = footer.ToString();
-                //If messageId not exist, insert, else update
-                if (context.SITATEX_FILES.Where(s => s.FileName == sCC.FileName).FirstOrDefault<SCC_SITATEX>() is null)
+                //If file name not exist, insert, else update
+                if (!context.SITATEX_FILES.Any(s => s.FileName == sCC.FileName))
                 {
                     context.Add(sCC);
                 }
@@ -66,27 +88,15 @@ namespace ReadFiles
                 {
                     context.Update(sCC);
                 }
-                List<string> messages = sCC.SubMessage.Split("//").ToList();
                 //Get sub messages
-                sCC.subMessages = new List<SCMessages>();
-                foreach (var message in messages)
-                {
-                    Console.WriteLine(message);
-                    if (message.ToString() != null)
-                    {
-                        var SCMessage = new SCMessages()
-                        {
-                            SCC_SITATEXID = sCC.ID,
-                            MessageID = sCC.MessageId,
-                            Content = message
-                        };
-                        sCC.subMessages.Add(SCMessage);
-                    }
-                }
                 context.SaveChanges();
             }
             context.SaveChanges();
             //Console.WriteLine("=ORIGIN\nHDQONVN");
+        }
+        public void GetSubMessages(string content)
+        {
+
         }
         //public void GetSchedulesMessages(string MessageID, string Content)
         //{

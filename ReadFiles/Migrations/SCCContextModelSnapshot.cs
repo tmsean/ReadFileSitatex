@@ -85,7 +85,7 @@ namespace ReadFiles.Migrations
                     b.Property<string>("Priority")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SubMessage")
+                    b.Property<string>("SMI")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Text")
@@ -103,7 +103,7 @@ namespace ReadFiles.Migrations
             modelBuilder.Entity("ReadFiles.Data.SCMessages", b =>
                 {
                     b.HasOne("ReadFiles.SCC_SITATEX", null)
-                        .WithMany("subMessages")
+                        .WithMany("SubMessages")
                         .HasForeignKey("SCC_SITATEXID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -111,7 +111,7 @@ namespace ReadFiles.Migrations
 
             modelBuilder.Entity("ReadFiles.SCC_SITATEX", b =>
                 {
-                    b.Navigation("subMessages");
+                    b.Navigation("SubMessages");
                 });
 #pragma warning restore 612, 618
         }
