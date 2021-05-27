@@ -10,7 +10,8 @@ namespace ReadFiles
         static void Main(string[] args)
         {
             Common common = new();
-            common.GetFileSita();
+            common.CheckFile();
+            //common.GetFileSita();
         }
     }
 }

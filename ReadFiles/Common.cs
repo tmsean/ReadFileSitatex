@@ -38,6 +38,7 @@ namespace ReadFiles
                 }
                 sCC.Destinations = sb.ToString();
                 sCC.Origin = contents[checkOrigin + 1];
+                //Get messageID, smi, text
                 int checkMessageId = contents.FindIndex(a => a.Contains("=MSGID"));
                 sCC.MessageId = contents[checkMessageId + 1];
                 int checkSMI = contents.FindIndex(a => a.Contains("=SMI"));
@@ -59,6 +60,7 @@ namespace ReadFiles
                     //Console.WriteLine(message);
                     if (!String.IsNullOrEmpty(message))
                     {
+                        string message_RemoveEmptyLines = Regex.Replace(message, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
                         var SCMessage = new SCMessages()
                         {
                             SCC_SITATEXID = sCC.ID,
@@ -98,18 +100,6 @@ namespace ReadFiles
         {
 
         }
-        //public void GetSchedulesMessages(string MessageID, string Content)
-        //{
-        //    var context = new SCCContext();
-
-        //    var schedulesMessage = new SubMessages()
-        //    {
-        //        MessageID = MessageID,
-        //        Content = Content
-        //    };
-        //    context.Add(schedulesMessage);
-        //    context.SaveChanges();
-        //}
         public void CheckFile()
         {
             string directory = ConfigurationManager.AppSettings["directory"];
@@ -135,80 +125,38 @@ namespace ReadFiles
             foreach (string file in Directory.EnumerateFiles(directory, "*.RCV"))
             {
                 //Method 1:
-                //string content = File.ReadAllText(file);
+                string contents = File.ReadAllText(file);
+                if (contents.Contains("=ORIGIN\nHDQONVN") || contents.Contains("HDQTPVN") || contents.Contains("HDQOSVN"))
+                {
 
-                //if (content.Contains("=ORIGIN\nHDQONVN") || content.Contains("=ORIGIN\nHDQTPVN") || content.Contains("=ORIGIN\nHDQOSVN"))
-                //{
-
-                //    FileInfo fileToGet = new FileInfo(file);
-                //    File.Copy(file, Path.Combine(toDirectory, fileToGet.Name), true);
-                //}
+                    FileInfo filetoget = new FileInfo(file);
+                    File.Copy(file, Path.Combine(toDirectory, filetoget.Name), true);
+                }
 
                 //Method 2
-                int counter = 0;
-                string line;
+                //int counter = 0;
+                //string line;
 
-                // Read the file and display it line by line.
-                System.IO.StreamReader readFile = new System.IO.StreamReader(file);
-                while ((line = readFile.ReadLine()) != null)
-                {
-                    StringBuilder context = new StringBuilder();
-                    context.Append(line + "\n");
-                    if (context.ToString().Contains("=ORIGIN\nHDQONVN") || context.ToString().Contains("=ORIGIN\nHDQTPVN") || context.ToString().Contains("=ORIGIN\nHDQOSVN"))
-                    {
-                        FileInfo fileToGet = new FileInfo(file);
-                        File.Copy(file, Path.Combine(toDirectory, fileToGet.Name), true);
-                        continue;
-                    }
+                //// Read the file and display it line by line.
+                //System.IO.StreamReader readFile = new System.IO.StreamReader(file);
+                //while ((line = readFile.ReadLine()) != null)
+                //{
+                //    StringBuilder context = new StringBuilder();
+                //    context.Append(line + "\n");
+                //    if (context.ToString().Contains("=ORIGIN\nHDQONVN") || context.ToString().Contains("=ORIGIN\nHDQTPVN") || context.ToString().Contains("=ORIGIN\nHDQOSVN"))
+                //    {
+                //        FileInfo fileToGet = new FileInfo(file);
+                //        File.Copy(file, Path.Combine(toDirectory, fileToGet.Name), true);
+                //        continue;
+                //    }
 
-                    counter++;
-                }
+                //    counter++;
+                //}
 
-                readFile.Close();
+                //readFile.Close();
             }
-            //Console.WriteLine("=ORIGIN\nHDQONVN");
 
             Console.ReadLine();
-        }
-        public void ReadFile()
-        {
-            //Default file. MAKE SURE TO CHANGE THIS LOCATION AND FILE PATH TO YOUR FILE   
-            string textFile = @"E:\SCC\SITATEX_TEST.txt";
-
-            if (File.Exists(textFile))
-            {
-                // Read entire text file content in one string    
-                string text = File.ReadAllText(textFile);
-                Console.WriteLine(text);
-            }
-
-            if (File.Exists(textFile))
-            {
-                // Read a text file line by line.  
-                string[] lines = File.ReadAllLines(textFile);
-                foreach (string line in lines)
-                    Console.WriteLine(line);
-            }
-
-            if (File.Exists(textFile))
-            {
-                // Read file using StreamReader. Reads file line by line  
-                using (StreamReader file = new StreamReader(textFile))
-                {
-                    int counter = 0;
-                    string ln;
-
-                    while ((ln = file.ReadLine()) != null)
-                    {
-                        Console.WriteLine(ln);
-                        counter++;
-                    }
-                    file.Close();
-                    Console.WriteLine($"File has {counter} lines.");
-                }
-            }
-
-            Console.ReadKey();
         }
 
         public void TrackDirectory()
