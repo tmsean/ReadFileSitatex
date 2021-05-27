@@ -126,11 +126,12 @@ namespace ReadFiles
             {
                 //Method 1:
                 string contents = File.ReadAllText(file);
-                if (contents.Contains("=ORIGIN\nHDQONVN") || contents.Contains("HDQTPVN") || contents.Contains("HDQOSVN"))
+                if (contents.Contains("=ORIGIN\nHDQONVN") || contents.Contains("=ORIGIN\nHDQTPVN") || contents.Contains("=ORIGIN\nHDQOSVN"))
                 {
 
                     FileInfo filetoget = new FileInfo(file);
                     File.Copy(file, Path.Combine(toDirectory, filetoget.Name), true);
+                    Console.WriteLine(string.Format("File found: {0}", filetoget.Name));
                 }
 
                 //Method 2
