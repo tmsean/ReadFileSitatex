@@ -20,6 +20,8 @@ namespace ReadFiles
             {
                 List<string> contents = File.ReadAllLines(file).ToList();
                 SCC_SITATEX sCC = new();
+                FileInfo getFile = new(file);
+                sCC.FileName = getFile.Name;
 
                 int checkHeader = contents.FindIndex(a => a.Contains("=HEADER"));
                 sCC.Header = contents[checkHeader + 1];
@@ -39,7 +41,7 @@ namespace ReadFiles
                 sCC.MessageId = contents[checkMessageId + 1];
                 sCC.Text = String.Concat(contents[checkText + 1], "\n", contents[checkText + 2]);
                 StringBuilder subMessage = new StringBuilder();
-                int checkMessageEnd = contents.FindIndex(a => a.Contains("SI"));
+                int checkMessageEnd = contents.FindIndex(a => a.Contains("SI") || a.Contains("DC THEO SLOT") || a.Contains("BRGDS/"));
                 for (int i = checkText + 2; i < checkMessageEnd; i++)
                 {
                     subMessage.AppendLine(contents[i]);
@@ -48,15 +50,15 @@ namespace ReadFiles
                 var footer = new System.Text.StringBuilder();
                 if (checkMessageEnd > 0)
                 {
-                    for (int i = checkMessageEnd; i < contents.Count - 1; i++)
+                    for (int i = checkMessageEnd; i < contents.Count; i++)
                     {
-                        Console.WriteLine(checkMessageEnd);
+                        //Console.WriteLine(checkMessageEnd);
                         footer.AppendLine(contents[i]);
                     }
                 }
                 sCC.MessageEnd = footer.ToString();
                 //If messageId not exist, insert, else update
-                if (context.SITATEX_FILES.Where(s => s.MessageId == sCC.MessageId).FirstOrDefault<SCC_SITATEX>() is null)
+                if (context.SITATEX_FILES.Where(s => s.FileName == sCC.FileName).FirstOrDefault<SCC_SITATEX>() is null)
                 {
                     context.Add(sCC);
                 }
@@ -64,24 +66,40 @@ namespace ReadFiles
                 {
                     context.Update(sCC);
                 }
-
-                GetSchedulesMessages(sCC.MessageId, sCC.SubMessage);
+                List<string> messages = sCC.SubMessage.Split("//").ToList();
+                //Get sub messages
+                sCC.subMessages = new List<SCMessages>();
+                foreach (var message in messages)
+                {
+                    Console.WriteLine(message);
+                    if (message.ToString() != null)
+                    {
+                        var SCMessage = new SCMessages()
+                        {
+                            SCC_SITATEXID = sCC.ID,
+                            MessageID = sCC.MessageId,
+                            Content = message
+                        };
+                        sCC.subMessages.Add(SCMessage);
+                    }
+                }
+                context.SaveChanges();
             }
             context.SaveChanges();
             //Console.WriteLine("=ORIGIN\nHDQONVN");
         }
-        public void GetSchedulesMessages(string MessageID, string Content)
-        {
-            var context = new SCCContext();
+        //public void GetSchedulesMessages(string MessageID, string Content)
+        //{
+        //    var context = new SCCContext();
 
-            var schedulesMessage = new SchedulesMessage()
-            {
-                MessageID = MessageID,
-                Content = Content
-            };
-            context.Add(schedulesMessage);
-            context.SaveChanges();
-        }
+        //    var schedulesMessage = new SubMessages()
+        //    {
+        //        MessageID = MessageID,
+        //        Content = Content
+        //    };
+        //    context.Add(schedulesMessage);
+        //    context.SaveChanges();
+        //}
         public void CheckFile()
         {
             string directory = ConfigurationManager.AppSettings["directory"];

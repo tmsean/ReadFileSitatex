@@ -29,7 +29,7 @@ namespace ReadFiles.Migrations
                     Priority = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Destinations = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Origin = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MessageId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MessageId = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SubMessage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MessageEnd = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -40,7 +40,7 @@ namespace ReadFiles.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "schedulesMessages",
+                name: "ScheduleChangeMessages",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
@@ -51,9 +51,9 @@ namespace ReadFiles.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_schedulesMessages", x => x.ID);
+                    table.PrimaryKey("PK_ScheduleChangeMessages", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_schedulesMessages_SITATEX_FILES_SCC_SITATEXID",
+                        name: "FK_ScheduleChangeMessages_SITATEX_FILES_SCC_SITATEXID",
                         column: x => x.SCC_SITATEXID,
                         principalTable: "SITATEX_FILES",
                         principalColumn: "ID",
@@ -61,8 +61,8 @@ namespace ReadFiles.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_schedulesMessages_SCC_SITATEXID",
-                table: "schedulesMessages",
+                name: "IX_ScheduleChangeMessages_SCC_SITATEXID",
+                table: "ScheduleChangeMessages",
                 column: "SCC_SITATEXID");
         }
 
@@ -72,7 +72,7 @@ namespace ReadFiles.Migrations
                 name: "Destinations");
 
             migrationBuilder.DropTable(
-                name: "schedulesMessages");
+                name: "ScheduleChangeMessages");
 
             migrationBuilder.DropTable(
                 name: "SITATEX_FILES");

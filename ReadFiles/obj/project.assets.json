@@ -5972,11 +5972,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\SCC\\ReadFiles\\ReadFiles\\ReadFiles.csproj",
+      "projectUniqueName": "E:\\SCC\\ReadFiles\\ReadFileSitatex\\ReadFiles\\ReadFiles.csproj",
       "projectName": "ReadFiles",
-      "projectPath": "E:\\SCC\\ReadFiles\\ReadFiles\\ReadFiles.csproj",
+      "projectPath": "E:\\SCC\\ReadFiles\\ReadFileSitatex\\ReadFiles\\ReadFiles.csproj",
       "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
-      "outputPath": "E:\\SCC\\ReadFiles\\ReadFiles\\obj\\",
+      "outputPath": "E:\\SCC\\ReadFiles\\ReadFileSitatex\\ReadFiles\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

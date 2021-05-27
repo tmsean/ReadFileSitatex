@@ -11,7 +11,7 @@ namespace ReadFiles.Data
     {
         public DbSet<SCC_SITATEX> SITATEX_FILES { get; set; }
         public DbSet<DestinationTypeB> Destinations { get; set; }
-        public DbSet<SchedulesMessage> schedulesMessages { get; set; }
+        public DbSet<SCMessages> SCMessages { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("Server=.;Database=SCC;Trusted_Connection=True;");
@@ -21,6 +21,7 @@ namespace ReadFiles.Data
             //builder.Entity<SCC_SITATEX>()
             //    .HasIndex(s => s.MessageId)
             //    .IsUnique();
+            builder.Entity<SCC_SITATEX>().HasIndex(s => s.FileName).IsUnique();
         }
     }
 }

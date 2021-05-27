@@ -10,7 +10,6 @@ namespace ReadFiles
     class SCCRepository
     {
         private readonly SCCContext _context = null;
-        private object newfile;
 
         public SCCRepository(SCCContext context)
         {
