@@ -15,12 +15,5 @@ namespace ReadFiles
         {
             _context = context;
         }
-        public static void AddNewDestination(DestinationTypeB model)
-        {
-            var newDestination = new DestinationTypeB()
-            {
-                Destionations = model.Destionations
-            };
-        }
     }
 }

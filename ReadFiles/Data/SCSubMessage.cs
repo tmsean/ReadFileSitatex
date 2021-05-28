@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ReadFiles.Data
 {
-    public class SCMessages
+    public class SCSubMessage
     {
         public int ID { get; set; }
         public string MessageID { get; set; }
         public string Content { get; set; }
-        public int SCC_SITATEXID { get; set; }
+        public int SC_SITATEXID { get; set; }
     }
 }

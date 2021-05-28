@@ -2,15 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReadFiles.Data;
 
 namespace ReadFiles.Migrations
 {
     [DbContext(typeof(SCCContext))]
-    partial class SCCContextModelSnapshot : ModelSnapshot
+    [Migration("20210528034131_test")]
+    partial class test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -18,7 +20,7 @@ namespace ReadFiles.Migrations
                 .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("ReadFiles.Data.SCSubMessage", b =>
+            modelBuilder.Entity("ReadFiles.Data.SCMessages", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -31,17 +33,32 @@ namespace ReadFiles.Migrations
                     b.Property<string>("MessageID")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SC_SITATEXID")
+                    b.Property<int>("SCC_SITATEXID")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("SC_SITATEXID");
+                    b.HasIndex("SCC_SITATEXID");
 
-                    b.ToTable("SCSubMessages");
+                    b.ToTable("SCMessages");
                 });
 
-            modelBuilder.Entity("ReadFiles.SC_SITATEX", b =>
+            modelBuilder.Entity("ReadFiles.DestinationTypeB", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Destionations")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Destinations");
+                });
+
+            modelBuilder.Entity("ReadFiles.SCC_SITATEX", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -83,19 +100,19 @@ namespace ReadFiles.Migrations
                         .IsUnique()
                         .HasFilter("[FileName] IS NOT NULL");
 
-                    b.ToTable("SC_SITATEXes");
+                    b.ToTable("SITATEX_FILES");
                 });
 
-            modelBuilder.Entity("ReadFiles.Data.SCSubMessage", b =>
+            modelBuilder.Entity("ReadFiles.Data.SCMessages", b =>
                 {
-                    b.HasOne("ReadFiles.SC_SITATEX", null)
+                    b.HasOne("ReadFiles.SCC_SITATEX", null)
                         .WithMany("SubMessages")
-                        .HasForeignKey("SC_SITATEXID")
+                        .HasForeignKey("SCC_SITATEXID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ReadFiles.SC_SITATEX", b =>
+            modelBuilder.Entity("ReadFiles.SCC_SITATEX", b =>
                 {
                     b.Navigation("SubMessages");
                 });

@@ -10,7 +10,9 @@ using System.Text.RegularExpressions;
 namespace ReadFiles
 {
     class Common
-    {
+    {            
+        //Define command levels to define whether should get Flight Number, IssueDate, Config, ORI/DEST, FROMTIME/TOTIME
+        private readonly Dictionary<string, int> commandvalues = new Dictionary<string, int>();
         public void GetFileSita()
         {
             string directory = "E:\\File HDQ";
@@ -19,7 +21,7 @@ namespace ReadFiles
             foreach (string file in Directory.EnumerateFiles(directory, "*.RCV"))
             {
                 List<string> contents = File.ReadAllLines(file).ToList();
-                SCC_SITATEX sCC = new();
+                SC_SITATEX sCC = new();
                 FileInfo getFile = new(file);
                 //Get file name
                 sCC.FileName = getFile.Name;
@@ -53,7 +55,7 @@ namespace ReadFiles
                     subMessageContent.AppendLine(contents[i]);
                 }
 
-                sCC.SubMessages = new List<SCMessages>();
+                sCC.SubMessages = new List<SCSubMessage>();
                 List<string> messages = subMessageContent.ToString().Split("//").ToList();
                 foreach (string message in messages)
                 {
@@ -61,11 +63,11 @@ namespace ReadFiles
                     if (!String.IsNullOrEmpty(message))
                     {
                         string message_RemoveEmptyLines = Regex.Replace(message, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
-                        var SCMessage = new SCMessages()
+                        var SCMessage = new SCSubMessage()
                         {
-                            SCC_SITATEXID = sCC.ID,
+                            SC_SITATEXID = sCC.ID,
                             MessageID = sCC.MessageId,
-                            Content = message
+                            Content = message_RemoveEmptyLines
                         };
                         sCC.SubMessages.Add(SCMessage);
                     }
@@ -82,7 +84,7 @@ namespace ReadFiles
                 }
                 sCC.MessageEnd = footer.ToString();
                 //If file name not exist, insert, else update
-                if (!context.SITATEX_FILES.Any(s => s.FileName == sCC.FileName))
+                if (!context.SC_SITATEXes.Any(s => s.FileName == sCC.FileName))
                 {
                     context.Add(sCC);
                 }
@@ -98,40 +100,42 @@ namespace ReadFiles
         }
         public void HandleSubMessage(string content)
         {
-            //Define command levels to define whether should get Flight Number, IssueDate, Config, ORI/DEST, FROMTIME/TOTIME
-            Dictionary<string, int> commandvalues = new Dictionary<string, int>();
-            commandvalues.Add("NEW", 4);
-            commandvalues.Add("RPL", 4);
-            commandvalues.Add("TIM", 3);
-            commandvalues.Add("EQT", 2);
-            commandvalues.Add("CON", 2);
-            commandvalues.Add("CNL", 1);
             string[] lines = Regex.Split(content, @"\r?\n|\r");
             string[] firstLine = lines[0].Split();
-            string ChangeReason = firstLine[1];
-
+            if (!string.IsNullOrEmpty(firstLine[1]))
+            {
+                string ChangeReason = Regex.Replace(firstLine[1], @"\r?\n|\r", "");
+                Console.WriteLine(string.Format("SC Reason is: {0}", ChangeReason));
+            }
+            Console.WriteLine(string.Format(""));
             //Decide level of this submessage to get command details
             if (firstLine[0].Contains("/"))
             {
                 List<string> commands =  firstLine[0].Split("/").ToList();
                 int maxLevel = 1;
+
+                Console.WriteLine(string.Format("List of commands:"));
                 foreach (var c in commands)
                 {
                     if (commandvalues[c] > maxLevel) maxLevel = commandvalues[c];
+                    Console.WriteLine(c);
                 }
-                CheckCommand(maxLevel, lines);
+                CheckCommandASM(maxLevel, lines);
             }
             else //1 command only
             {
-                CheckCommand(commandvalues[firstLine[0]], lines);
+                Console.WriteLine(string.Format("Command is: {0}", firstLine[0]));
+                CheckCommandASM(commandvalues[firstLine[0]], lines);
             }
-
+            Console.WriteLine();
         }
-        public void CheckCommand(int level, string[] lines)
+        public void CheckCommandASM(int level, string[] lines)
         {
             //Get flight number, Issue date from second line
             string FlightNumber = lines[1].Split("/")[0];
             string IssueDate = lines[1].Split("/")[1];
+            Console.WriteLine(string.Format("Flight number: {0}", FlightNumber));
+            Console.WriteLine(string.Format("Issue date: {0}", IssueDate));
             if (level == 4)
             {
                 //GetFullContent
@@ -142,6 +146,9 @@ namespace ReadFiles
                 string FromTime = lines[3].Split()[0].Substring(2, 4);
                 string Destination = lines[3].Split()[1].Substring(0, 3);
                 string ToTime = lines[3].Split()[1].Substring(2, 4);
+                Console.WriteLine(string.Format("Config: {0}", Config));
+                Console.WriteLine(string.Format("Orgin/Destination {0}/{1}", Origin, Destination));
+                Console.WriteLine(string.Format("From Time/To Time: {0}/{1}", FromTime, ToTime));
 
             }
             else if (level == 3)
@@ -151,14 +158,16 @@ namespace ReadFiles
                 string Origin = lines[2].Split()[0].Substring(0, 3);
                 string FromTime = lines[2].Split()[0].Substring(2, 4);
                 string Destination = lines[2].Split()[1].Substring(0, 3);
-                string ToTime = lines[2].Split()[1].Substring(2, 4);
+                string ToTime = lines[2].Split()[1].Substring(2, 4); 
+                Console.WriteLine(string.Format("Orgin/Destination {0}/{1}", Origin, Destination));
+                Console.WriteLine(string.Format("From Time/To Time: {0}/{1}", FromTime, ToTime));
             }
             else if (level == 2)
             {
                 //GetChangeConfig
                 //Get config from third line
                 string Config = lines[2];
-
+                Console.WriteLine(string.Format("Config: {0}", Config));
             }
             else  if (level == 1)
             {
@@ -195,8 +204,9 @@ namespace ReadFiles
                 {
 
                     FileInfo filetoget = new FileInfo(file);
-                    File.Copy(file, Path.Combine(toDirectory, filetoget.Name), true);
                     Console.WriteLine(string.Format("File found: {0}", filetoget.Name));
+                    File.Copy(file, Path.Combine(toDirectory, filetoget.Name), true);
+                    Console.WriteLine(Path.Combine(toDirectory, filetoget.Name));
                 }
 
                 //Method 2
@@ -290,5 +300,17 @@ namespace ReadFiles
                 PrintException(ex.InnerException);
             }
         }
+
+        #region Constructor
+        public Common()
+        {
+            commandvalues.Add("NEW", 4);
+            commandvalues.Add("RPL", 4);
+            commandvalues.Add("TIM", 3);
+            commandvalues.Add("EQT", 2);
+            commandvalues.Add("CON", 2);
+            commandvalues.Add("CNL", 1);
+        }
+        #endregion
     }
 }
