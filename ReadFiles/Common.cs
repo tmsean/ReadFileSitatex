@@ -96,9 +96,74 @@ namespace ReadFiles
             context.SaveChanges();
             //Console.WriteLine("=ORIGIN\nHDQONVN");
         }
-        public void GetSubMessages(string content)
+        public void HandleSubMessage(string content)
         {
+            //Define command levels to define whether should get Flight Number, IssueDate, Config, ORI/DEST, FROMTIME/TOTIME
+            Dictionary<string, int> commandvalues = new Dictionary<string, int>();
+            commandvalues.Add("NEW", 4);
+            commandvalues.Add("RPL", 4);
+            commandvalues.Add("TIM", 3);
+            commandvalues.Add("EQT", 2);
+            commandvalues.Add("CON", 2);
+            commandvalues.Add("CNL", 1);
+            string[] lines = Regex.Split(content, @"\r?\n|\r");
+            string[] firstLine = lines[0].Split();
+            string ChangeReason = firstLine[1];
 
+            //Decide level of this submessage to get command details
+            if (firstLine[0].Contains("/"))
+            {
+                List<string> commands =  firstLine[0].Split("/").ToList();
+                int maxLevel = 1;
+                foreach (var c in commands)
+                {
+                    if (commandvalues[c] > maxLevel) maxLevel = commandvalues[c];
+                }
+                CheckCommand(maxLevel, lines);
+            }
+            else //1 command only
+            {
+                CheckCommand(commandvalues[firstLine[0]], lines);
+            }
+
+        }
+        public void CheckCommand(int level, string[] lines)
+        {
+            //Get flight number, Issue date from second line
+            string FlightNumber = lines[1].Split("/")[0];
+            string IssueDate = lines[1].Split("/")[1];
+            if (level == 4)
+            {
+                //GetFullContent
+                //Get config from third line
+                string Config = lines[2];
+                //Get origin/destination, fromtime/totime from fourth line
+                string Origin = lines[3].Split()[0].Substring(0, 3);
+                string FromTime = lines[3].Split()[0].Substring(2, 4);
+                string Destination = lines[3].Split()[1].Substring(0, 3);
+                string ToTime = lines[3].Split()[1].Substring(2, 4);
+
+            }
+            else if (level == 3)
+            {
+                //GetChangeTime
+                //Get origin/destination, fromtime/totime from third line
+                string Origin = lines[2].Split()[0].Substring(0, 3);
+                string FromTime = lines[2].Split()[0].Substring(2, 4);
+                string Destination = lines[2].Split()[1].Substring(0, 3);
+                string ToTime = lines[2].Split()[1].Substring(2, 4);
+            }
+            else if (level == 2)
+            {
+                //GetChangeConfig
+                //Get config from third line
+                string Config = lines[2];
+
+            }
+            else  if (level == 1)
+            {
+                //GetFlightNoIssDateOnly
+            }
         }
         public void CheckFile()
         {
