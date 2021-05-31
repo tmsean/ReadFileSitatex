@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ReadFiles
 {
-    public class SC_SITATEX
+    public class SITATEX
     {
         [Key]
         public int ID { get; set; }
@@ -20,12 +20,6 @@ namespace ReadFiles
         public string Text { get; set; }
         public string MessageEnd { get; set; }
 
-        public ICollection<SCSubMessage> SubMessages { get; set; }
-    }
-    public class DestinationTypeB
-    {
-        [Key]
-        public int ID { get; set; }
-        public string Destionations { get; set; }
+        public ICollection<SubMessage> SubMessages { get; set; }
     }
 }

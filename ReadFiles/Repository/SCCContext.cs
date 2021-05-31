@@ -9,8 +9,8 @@ namespace ReadFiles.Data
 {
     public class SCCContext : DbContext
     {
-        public DbSet<SC_SITATEX> SC_SITATEXes { get; set; }
-        public DbSet<SCSubMessage> SCSubMessages { get; set; }
+        public DbSet<SITATEX> SITATEXes { get; set; }
+        public DbSet<SubMessage> SubMessages { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("Server=.;Database=SCC;Trusted_Connection=True;");
@@ -20,7 +20,7 @@ namespace ReadFiles.Data
             //builder.Entity<SCC_SITATEX>()
             //    .HasIndex(s => s.MessageId)
             //    .IsUnique();
-            builder.Entity<SC_SITATEX>().HasIndex(s => s.FileName).IsUnique();
+            builder.Entity<SITATEX>().HasIndex(s => s.FileName).IsUnique();
         }
     }
 }

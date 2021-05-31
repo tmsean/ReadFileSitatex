@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 namespace ReadFiles
 {
     class Common
-    {            
+    {
         //Define command levels to define whether should get Flight Number, IssueDate, Config, ORI/DEST, FROMTIME/TOTIME
         private readonly Dictionary<string, int> commandvalues = new Dictionary<string, int>();
         public void GetFileSita()
@@ -21,7 +21,7 @@ namespace ReadFiles
             foreach (string file in Directory.EnumerateFiles(directory, "*.RCV"))
             {
                 List<string> contents = File.ReadAllLines(file).ToList();
-                SC_SITATEX sCC = new();
+                SITATEX sCC = new();
                 FileInfo getFile = new(file);
                 //Get file name
                 sCC.FileName = getFile.Name;
@@ -55,7 +55,7 @@ namespace ReadFiles
                     subMessageContent.AppendLine(contents[i]);
                 }
 
-                sCC.SubMessages = new List<SCSubMessage>();
+                sCC.SubMessages = new List<SubMessage>();
                 List<string> messages = subMessageContent.ToString().Split("//").ToList();
                 foreach (string message in messages)
                 {
@@ -63,9 +63,9 @@ namespace ReadFiles
                     if (!String.IsNullOrEmpty(message))
                     {
                         string message_RemoveEmptyLines = Regex.Replace(message, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
-                        var SCMessage = new SCSubMessage()
+                        var SCMessage = new SubMessage()
                         {
-                            SC_SITATEXID = sCC.ID,
+                            SITATEXID = sCC.ID,
                             MessageID = sCC.MessageId,
                             Content = message_RemoveEmptyLines
                         };
@@ -84,7 +84,7 @@ namespace ReadFiles
                 }
                 sCC.MessageEnd = footer.ToString();
                 //If file name not exist, insert, else update
-                if (!context.SC_SITATEXes.Any(s => s.FileName == sCC.FileName))
+                if (!context.SITATEXes.Any(s => s.FileName == sCC.FileName))
                 {
                     context.Add(sCC);
                 }
@@ -111,7 +111,7 @@ namespace ReadFiles
             //Decide level of this submessage to get command details
             if (firstLine[0].Contains("/"))
             {
-                List<string> commands =  firstLine[0].Split("/").ToList();
+                List<string> commands = firstLine[0].Split("/").ToList();
                 int maxLevel = 1;
 
                 Console.WriteLine(string.Format("List of commands:"));
@@ -158,7 +158,7 @@ namespace ReadFiles
                 string Origin = lines[2].Split()[0].Substring(0, 3);
                 string FromTime = lines[2].Split()[0].Substring(2, 4);
                 string Destination = lines[2].Split()[1].Substring(0, 3);
-                string ToTime = lines[2].Split()[1].Substring(2, 4); 
+                string ToTime = lines[2].Split()[1].Substring(2, 4);
                 Console.WriteLine(string.Format("Orgin/Destination {0}/{1}", Origin, Destination));
                 Console.WriteLine(string.Format("From Time/To Time: {0}/{1}", FromTime, ToTime));
             }
@@ -169,7 +169,7 @@ namespace ReadFiles
                 string Config = lines[2];
                 Console.WriteLine(string.Format("Config: {0}", Config));
             }
-            else  if (level == 1)
+            else if (level == 1)
             {
                 //GetFlightNoIssDateOnly
             }
